@@ -1,4 +1,3 @@
-
 oriC_vibrio_cholerae = 'ATCAATGATCAACGTAAGCTTCTAAGCATGATCAAGGTGCTCACACAGTTTATCCACAACCTGAGTGGATGACATCAAGATAGGTCGTTGTATCTCCTTCCTCTCGTACTCTCATGACCACGGAAAGATGATCAAGAGAGGATGATTTCTTGGCCATATCGCAATGAATACTTGTGACTTGTGCTTCCAATTGACATCTTCAGCGCCATATTGCGCTGGCCAAGGTGACGGAGCGGGATTACGAAAGCATGATCATGGCTGTTGTTCTGTTTATCTTGTTTTGACTGAGACTTGTTAGGATAGACGGTTTTTCATCACTGACTAGCCAAAGCCTTACTCTGCCTGACATCGACCGTAAATTGATAATGAATTTACATGCTTCCGCGACGATTTACCTCTTGATCATCGATCCGATTGAAGATCTTCAATTGTTAATTCTCTTGCCTCGACTCATAGCCATGATGAGCTCTTGATCATGTTTCCTTAACCCTCTATTTTTTACGGAAGAATGATCAAGCTGCTGCTCTTGATCATCGTTTC'
 
 # Input:  A string Text and an integer k
@@ -23,6 +22,21 @@ def FrequencyMap(Text, k):
     for key in keys:
         freq[key] = PatternCount(Text, key)
     return freq
+
+def FrequencyMap_t(Text, k, t):
+    """
+    :param Text: where to look for k-mers
+    :param k: length of the string patterns
+    :param t: minimum number of repetitions of k-mer
+    :return: all k-mers in Text that appears at least t times
+    """
+    result = []
+    frequency = FrequencyMap(Text, k)
+    for key in frequency:
+        if frequency[key] >= t:
+            result.append(key)
+
+    return result
 
 def PatternCount(Text, Pattern):
     count = 0
@@ -77,6 +91,23 @@ def Pattern_Matching_for_cholerae():
         pattern = 'ATGATCAAG'
         return PatternMatching(pattern, genome)
 
+def ClumpFinding(genome, k, L, t):
+    """
+    Find patterns forming clumps in a string.
+        Input: A string Genome, and integers k, L, and t. 
+        Output: All distinct k-mers forming (L, t)-clumps in Genome.
+
+    Given integers L and t, a k-mer Pattern forms an (L, t)-clump inside a (longer) string Genome if there is an interval of Genome of length L in which this k-mer appears at least t times
+    """
+    assert(t < L)
+    result = set()
+    for i in range(len(genome) - L + 1):
+        genome_region = genome[i:i+L]
+        frequency = FrequencyMap_t(genome_region, k, t)
+        for k_mer in frequency:
+            result.add(k_mer)
+    return result
+
 if __name__ == '__main__':
     text = 'CTTGATCATCTTGATCATCTTGATCAT'
     k = 4
@@ -86,4 +117,4 @@ if __name__ == '__main__':
 
     Text = 'GCGCG'
 
-    print(ReverseComplement('GATTACA'))
+    print(ClumpFinding('CGGACTCGACAGATGTGAAGAACGACAATGTGAAGACTCGACACGACAGAGTGAAGAGAAGAGGAAACATTGTAA', 5, 50, 4))
